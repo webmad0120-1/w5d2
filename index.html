@@ -24,14 +24,28 @@
       }
 
       #map {
-        width: 70vw;
+        width: 100vw;
         height: 100vh;
       }
 
       aside.ui {
+        transition: all 0.5s;
         padding: 10px;
         width: 30vw;
         height: 100vh;
+        position: absolute;
+        background: rgba(255, 255, 255, 0.9);
+        left: calc(100vw - 50px);
+      }
+
+      aside.ui.open {
+        left: calc(100vw - 30vw);
+      }
+
+      aside.ui #open-close {
+        position: absolute;
+        top: calc(50vh - 20px);
+        left: 0;
       }
 
       button,
@@ -47,6 +61,7 @@
     <section>
       <div id="map"></div>
       <aside class="ui">
+        <button id="open-close">&lt;</button>
         <button id="change-zoom">Change zoom level</button>
         <button id="change-center">Change center</button>
         <button id="add-marker">Add marker</button>
@@ -201,6 +216,27 @@
               title: "I am here"
             });
           });
+        }
+      };
+
+      let isAsideOpen = false;
+      document.querySelector("aside.ui").classList.add("open");
+      document.querySelector("#open-close").innerHTML = ">";
+
+      setTimeout(() => {
+        document.querySelector("aside.ui").classList.remove("open");
+        document.querySelector("#open-close").innerHTML = "<";
+      }, 1000);
+
+      document.querySelector("#open-close").onclick = function() {
+        isAsideOpen = !isAsideOpen;
+
+        if (isAsideOpen) {
+          this.innerHTML = "<";
+          document.querySelector("aside.ui").classList.remove("open");
+        } else {
+          this.innerHTML = ">";
+          document.querySelector("aside.ui").classList.add("open");
         }
       };
     </script>
