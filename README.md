@@ -23,13 +23,6 @@
 - Using API data to represent the information in canvas using ChartJS - research by you!
 - Using Google Maps to locate cafeterias along with CRUD
 
-# Next - day w5d3
-
-- Fullstack Pizza App - starting 9am
-- Ajax with Axios - POST & PUT verbs
-- Nodemailer
-- ChartJS - micro learning
-
 # Goals
 
 - Use Google Maps on your applications
