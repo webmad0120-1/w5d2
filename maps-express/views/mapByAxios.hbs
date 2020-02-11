@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Simple Map</title>
+  <meta name="viewport" content="initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="reset.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #map {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    aside.ui {
+      transition: all 0.5s;
+      padding: 10px;
+      width: 30vw;
+      height: 100vh;
+      position: absolute;
+      background: rgba(255, 255, 255, 0.9);
+      left: calc(100vw - 50px);
+    }
+
+    aside.ui.open {
+      left: calc(100vw - 30vw);
+    }
+
+    aside.ui #open-close {
+      position: absolute;
+      top: calc(50vh - 20px);
+      left: 0;
+    }
+
+    button,
+    select {
+      font-size: 30px;
+      padding: 5px;
+      border-radius: 10px;
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <section>
+    <div id="map"></div>
+    <aside class="ui open">
+      <button id="load-oceania">Load Ocenia</button>
+      <button id="load-eu">Load EU</button>
+    </aside>
+  </section>
+  <script>
+    // https://developers.google.com/maps/documentation/javascript/reference
+    let map;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: new google.maps.LatLng(40.3922301, -3.6998982),
+        zoom: 3
+      });
+    }
+
+    // when I click on the load oceania button....
+    document.querySelector("#load-oceania").onclick = function () {
+      // I request in background (without reloading) to the endpoint
+      // living in my express web server to the URL http://localhost:3000/getAirportsByContinent/OC
+      // and this will provide a JSON with all the airports of Oceania
+      axios.get("/getAirportsByContinent/OC").then(airports => {
+        // all the airports are now available via airports.data
+        airports.data.forEach(airport => {
+          new google.maps.Marker({
+            position: new google.maps.LatLng(+airport.lat, +airport.lon),
+            map: map,
+            title: airport.name
+          });
+        })
+      })
+    }
+
+    document.querySelector("#load-eu").onclick = function () {
+      axios.get("/getAirportsByContinent/EU").then(airports => {
+        airports.data.forEach(airport => {
+          new google.maps.Marker({
+            position: new google.maps.LatLng(+airport.lat, +airport.lon),
+            map: map,
+            title: airport.name
+          });
+        })
+      })
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhmq9mD-vfQ2RRh7xTLIwUKfEvPk_9C6I&callback=initMap"
+    async defer></script>
+</body>
+
+</html>
