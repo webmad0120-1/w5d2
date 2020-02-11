@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="reset.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #map {
+        width: 70vw;
+        height: 100vh;
+      }
+
+      aside.ui {
+        padding: 10px;
+        width: 30vw;
+        height: 100vh;
+      }
+
+      button,
+      select {
+        font-size: 30px;
+        padding: 5px;
+        border-radius: 10px;
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <section>
+      <div id="map"></div>
+      <aside class="ui">
+        <button id="change-zoom">Change zoom level</button>
+        <button id="change-center">Change center</button>
+        <button id="add-marker">Add marker</button>
+        <button id="multiple-points">Add multiple points</button>
+        <button id="add-many">Add many</button>
+        <button id="activate-geo">Activate geolocalization</button>
+        <select id="change-capital">
+          <option value="-1">Select a capital</option>
+          <option value="0">Ulan Bator</option>
+          <option value="1">Nuku Alofa</option>
+          <option value="2">Wellington</option>
+        </select>
+      </aside>
+    </section>
+    <script>
+      // https://developers.google.com/maps/documentation/javascript/reference
+      let map;
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: new google.maps.LatLng(40.3922301, -3.6998982),
+          zoom: 15
+        });
+      }
+
+      document.querySelector("#change-zoom").onclick = function() {
+        map.setZoom(15);
+      };
+      document.querySelector("#change-center").onclick = function() {
+        map.setCenter(new google.maps.LatLng(40.4114515, -3.7009371));
+        map.setZoom(19);
+      };
+      document.querySelector("#change-capital").onchange = function(e) {
+        let capitals = [
+          [47.8913093, 106.6216912],
+          [-21.141891, -175.2151538],
+          [-41.2440266, 174.621429]
+        ];
+
+        const dropdownSelectedId = +this.value;
+        const capitalCoords = capitals[dropdownSelectedId];
+        map.setCenter(new google.maps.LatLng(capitalCoords[0], capitalCoords[1]));
+      };
+      document.querySelector("#add-marker").onclick = function() {
+        var image = {
+          url: "http://127.0.0.1:8080/customerMarker.png"
+          // This marker is 20 pixels wide by 32 pixels high.
+          //   size: new google.maps.Size(20, 32)
+        };
+
+        var marker = new google.maps.Marker({
+          position: new google.maps.LatLng(40.3922301, -3.6998982),
+          map: map,
+          title: "Hello World!",
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+          icon: image
+        });
+
+        map.panTo(new google.maps.LatLng(40.3922301, -3.6998982));
+
+        setTimeout(() => {
+          var image = {
+            url: "http://127.0.0.1:8080/customerMarker2.png"
+            // This marker is 20 pixels wide by 32 pixels high.
+            //   size: new google.maps.Size(20, 32)
+          };
+
+          new google.maps.Marker({
+            position: new google.maps.LatLng(40.3922301, -3.72),
+            map: map,
+            title: "Hello World!",
+            icon: image
+          });
+
+          map.panTo(new google.maps.LatLng(40.3922301, -3.72));
+        }, 1000);
+      };
+
+      document.querySelector("#add-many").onclick = function() {
+        Array(180)
+          .fill()
+          .forEach((_, idx) => {
+            new google.maps.Marker({
+              position: new google.maps.LatLng(40.3922301, idx),
+              map: map,
+              title: `Hello World! ${idx}`
+            });
+          });
+      };
+
+      document.querySelector("#multiple-points").onclick = function() {
+        let shops = [
+          {
+            coords: new google.maps.LatLng(40.3922301, -3.42),
+            name: "zapatillas comet"
+          },
+          {
+            coords: new google.maps.LatLng(40.3722301, -3.72),
+            name: "el patín de oro"
+          },
+          {
+            coords: new google.maps.LatLng(40.3922301, -3.52),
+            name: "test"
+          }
+        ];
+
+        let statues = [
+          {
+            coords: new google.maps.LatLng(40.3922305, -3.49),
+            name: "carlos v"
+          },
+          {
+            coords: new google.maps.LatLng(40.3722305, -3.79),
+            name: "la cibeles"
+          }
+        ];
+
+        statues.forEach(statueInfo => {
+          var image = {
+            url: "http://127.0.0.1:8080/customerMarker.png"
+          };
+
+          new google.maps.Marker({
+            position: statueInfo.coords,
+            map: map,
+            title: statueInfo.name,
+            icon: image
+          });
+        });
+
+        shops.forEach(shopInfo => {
+          var image = {
+            url: "http://127.0.0.1:8080/customerMarker2.png"
+          };
+
+          new google.maps.Marker({
+            position: shopInfo.coords,
+            map: map,
+            title: shopInfo.name,
+            icon: image
+          });
+        });
+      };
+
+      document.querySelector("#activate-geo").onclick = function() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            new google.maps.Marker({
+              position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+              map: map,
+              title: "I am here"
+            });
+          });
+        }
+      };
+    </script>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhmq9mD-vfQ2RRh7xTLIwUKfEvPk_9C6I&callback=initMap"
+      async
+      defer
+    ></script>
+  </body>
+</html>
